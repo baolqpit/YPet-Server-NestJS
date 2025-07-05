@@ -1,0 +1,9 @@
+1. Kiểu Partial<> là một utility type của TypeScript, biến mọi thuộc tính
+   trong Model thành Optional. Nghĩa là không cần truyền toàn bộ các trường
+   mà Model đó có - có thể truyền 1 phần giúp linh động trong update dữ liệu.
+
+2. MongoDB sẽ tự chuyển tên class thành pets khi schema được tạo.
+   Nếu muốn thay đổi, chỉnh sửa lại @Schema({collection: 'table_name'}).
+
+3. Hàm forFeature() dùng để đăng ký schema(collection) với NestJS trong modules
+cụ thể, giúp InjectModel(...) schema vào trong các service/controller.
