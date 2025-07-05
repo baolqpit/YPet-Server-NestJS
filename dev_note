@@ -7,3 +7,6 @@
 
 3. Hàm forFeature() dùng để đăng ký schema(collection) với NestJS trong modules
 cụ thể, giúp InjectModel(...) schema vào trong các service/controller.
+
+4. Annotation @Expose dùng để chỉ định các field sẽ được trả về khi chuyển đổi
+từ Document của MongoDB sang DTO
