@@ -1,0 +1,11 @@
+1. Cài Dependencies phục vụ cho việc chuyển đổi kiểu dữ liệu MongoDB sang Response Value.
+npm install class-transformer class-validator
+
+2. Cài thư viện hỗ trợ truy xuất với no-sql MongoDB
+npm install @nestjs/mongoose mongoose
+
+3. Cài thư viện hỗ trợ SwaggerUI
+npm install --save @nestjs/swagger swagger-ui-express
+
+4. Chạy server NestJS
+npm run start:dev
