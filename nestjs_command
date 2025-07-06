@@ -9,3 +9,7 @@ npm install --save @nestjs/swagger swagger-ui-express
 
 4. Chạy server NestJS
 npm run start:dev
+
+5. Cài đặt các package cần thiết để mã hóa mật khẩu và tạo token
+npm install @nestjs/jwt @nestjs/passport passport passport-jwt bcrypt
+npm install --save-dev @types/bcrypt
