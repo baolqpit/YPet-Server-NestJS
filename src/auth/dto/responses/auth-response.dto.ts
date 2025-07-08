@@ -11,7 +11,7 @@ export class AuthResponse {
   @Expose()
   accessToken: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
   refreshToken: string;
 }

@@ -12,12 +12,15 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { ResponseUserDto } from '../users/dto/responses/response-user.dto';
 import { ResponseError } from '../common/enums/response-error.enum';
+import * as process from 'node:process';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private config: ConfigService
   ) {}
 
   async register(dto: CreateUserDto): Promise<AuthResponse> {
@@ -27,11 +30,23 @@ export class AuthService {
     }
 
     const user = await this.userService.create(dto);
-    const token = this.jwtService.sign({ sub: user._id, email: user.email });
+
+    const payload = { sub: user._id, email: user.email };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.config.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRATION'),
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRATION'),
+    });
 
     return plainToInstance(AuthResponse, {
       user,
-      token,
+      accessToken,
+      refreshToken,
     });
   }
 
@@ -57,22 +72,55 @@ export class AuthService {
       excludeExtraneousValues: true,
     });
 
-    const token = this.jwtService.sign({
+    const payload = {
       sub: user._id,
       email: user.email,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.config.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRATION'),
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRATION'),
     });
 
     return plainToInstance(AuthResponse, {
       user,
-      token,
+      accessToken,
+      refreshToken,
     });
   }
 
   async validateToken(token: string) {
     try {
-      return this.jwtService.verify(token);
+      return this.jwtService.verify(token, {
+        secret: process.env.JWT_ACCESS_SECRET,
+      });
     } catch {
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException(ResponseError.TOKEN_INVALID);
+    }
+  }
+
+  async refreshAccessToken(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+
+      const newAccessToken = this.jwtService.sign(
+        { sub: payload.sub, email: payload.email },
+        {
+          secret: process.env.JWT_ACCESS_SECRET,
+          expiresIn: process.env.JWT_ACCESS_EXPIRATION,
+        },
+      );
+
+      return newAccessToken;
+    } catch (e) {
+      throw new UnauthorizedException(ResponseError.REFRESH_TOKEN_INVALID);
     }
   }
 }

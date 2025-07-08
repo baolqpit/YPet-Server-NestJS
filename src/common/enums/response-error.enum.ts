@@ -3,6 +3,7 @@ export enum ResponseError {
   INVALID_CREDENTIALS = 'Tài khoản hoặc mật khẩu không đúng',
   TOKEN_EXPIRED = 'Token đã hết hạn',
   TOKEN_INVALID = 'Token không hợp lệ',
+  REFRESH_TOKEN_INVALID = 'Refresh Token hết hạn hoặc không hợp lệ',
 
   // User
   EMAIL_ALREADY_EXISTS = 'Email đã tồn tại',
