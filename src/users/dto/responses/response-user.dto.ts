@@ -24,10 +24,6 @@ export class ResponseUserDto {
 
   @ApiProperty()
   @Expose()
-  password: string;
-
-  @ApiProperty()
-  @Expose()
   address: string;
 
   @ApiProperty()
