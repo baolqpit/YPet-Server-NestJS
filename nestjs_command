@@ -16,3 +16,7 @@ npm install --save-dev @types/bcrypt
 
 6. Cài đặt config
 npm install @nestjs/config
+
+7. Cài thư viện JWT Auth Guard
+npm install @nestjs/passport passport @nestjs/jwt passport-jwt
+npm install -D @types/passport-jwt

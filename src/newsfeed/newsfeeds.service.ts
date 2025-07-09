@@ -2,6 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { Newsfeed, NewsfeedDocument } from './schemas/newsfeed.schema';
+import { CreateNewsfeedDto } from './dto/requests/create-newsfeed.dto';
 
 @Injectable()
 export class NewsfeedService {
@@ -9,8 +10,17 @@ export class NewsfeedService {
     @InjectModel(Newsfeed.name) private newsfeedModel: Model<NewsfeedDocument>,
   ) {}
 
-  create(data: Partial<Newsfeed>) {
-    const created = new this.newsfeedModel(data);
-    return created.save();
+  async create(dto: CreateNewsfeedDto, userPayload: any) {
+    const newsfeed = new this.newsfeedModel({
+      ...dto,
+      authorId: userPayload.sub,
+      authorAvatar: userPayload.avatar,
+      authorName: userPayload.name,
+      createdAt: new Date(),
+      commentCount: 0,
+      favouriteCount: 0,
+    });
+
+    return await newsfeed.save();
   }
 }

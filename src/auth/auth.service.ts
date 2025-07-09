@@ -20,7 +20,7 @@ export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
-    private config: ConfigService
+    private config: ConfigService,
   ) {}
 
   async register(dto: CreateUserDto): Promise<AuthResponse> {
@@ -31,7 +31,12 @@ export class AuthService {
 
     const user = await this.userService.create(dto);
 
-    const payload = { sub: user._id, email: user.email };
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      avatar: user.avatar,
+      name: user.firstName + ' ' + user.lastName,
+    };
 
     const accessToken = this.jwtService.sign(payload, {
       secret: this.config.get<string>('JWT_ACCESS_SECRET'),
@@ -75,6 +80,8 @@ export class AuthService {
     const payload = {
       sub: user._id,
       email: user.email,
+      avatar: user.avatar,
+      name: user.firstName + ' ' + user.lastName,
     };
 
     const accessToken = this.jwtService.sign(payload, {
@@ -111,7 +118,12 @@ export class AuthService {
       });
 
       const newAccessToken = this.jwtService.sign(
-        { sub: payload.sub, email: payload.email },
+        {
+          sub: payload.sub,
+          email: payload.email,
+          name: payload.name,
+          avatar: payload.avatar,
+        },
         {
           secret: process.env.JWT_ACCESS_SECRET,
           expiresIn: process.env.JWT_ACCESS_EXPIRATION,

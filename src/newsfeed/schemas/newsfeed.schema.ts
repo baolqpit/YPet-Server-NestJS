@@ -14,9 +14,6 @@ export class Newsfeed {
   content: string;
 
   @Prop()
-  author: string;
-
-  @Prop()
   authorAvatar: string;
 
   @Prop()
@@ -26,7 +23,7 @@ export class Newsfeed {
   authorId: string;
 
   @Prop()
-  urlToImage: string;
+  urlToImages: string[];
 
   @Prop()
   publishedAt: Date;

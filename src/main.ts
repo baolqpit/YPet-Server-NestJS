@@ -11,6 +11,18 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('YPET Server')
     .setVersion('1.0')
+    ///Thêm authorize cho swagger
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'Nhập access token (không cần "Bearer")',
+        in: 'header',
+      },
+      'access-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
