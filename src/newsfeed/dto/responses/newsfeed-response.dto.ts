@@ -4,6 +4,10 @@ import { Expose } from 'class-transformer';
 export class NewsfeedResponseDto {
   @ApiProperty()
   @Expose()
+  _id: string;
+
+  @ApiProperty()
+  @Expose()
   title: string;
 
   @ApiProperty()

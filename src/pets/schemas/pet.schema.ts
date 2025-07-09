@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Post } from '@nestjs/common';
 
 export type PetDocument = Pet & Document;
 
@@ -20,5 +21,11 @@ export class Pet {
 
   @Prop()
   weight: number;
+
+  @Prop()
+  identityCard: string;
+
+  @Prop()
+  identityCardUrlToImage: string;
 }
 export const PetSchema = SchemaFactory.createForClass(Pet);

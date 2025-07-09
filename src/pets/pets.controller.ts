@@ -1,14 +1,31 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { PetsService } from './pets.service';
 import { Pet } from './schemas/pet.schema';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreatePetDto } from './dto/requests/create-pet.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiResponse } from '../common/helpers/api-response';
+import { ResponseMessage } from '../common/enums/response-message.enum';
+import { ResponseCode } from '../common/enums/response-code.enum';
 
+@ApiTags('Pets')
+@ApiBearerAuth('access-token')
 @Controller('pets')
 export class PetsController {
   constructor(private readonly petService: PetsService) {}
 
   @Post()
-  create(@Body() body: Partial<Pet>) {
-    return this.petService.create(body);
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() body: CreatePetDto) {
+    const result = await this.petService.create(body);
+    return new ApiResponse(true, ResponseMessage.PET_CREATED, result, ResponseCode.CREATED);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async get() {
+    const result = await this.petService.findAll();
+    return new ApiResponse(true, ResponseMessage.GET_PETS_SUCCESS, result, ResponseCode.SUCCESS);
   }
 }
 
