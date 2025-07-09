@@ -10,6 +10,11 @@ export enum ResponseMessage {
   USER_FOUND = 'Tìm thấy người dùng',
   USER_NOT_FOUND = 'Không tìm thấy người dùng',
 
+  //Newsfeed
+  NEWSFEED_CREATED = 'Tạo bài viết thành công',
+  GET_NEWSFEED_SUCCESS = 'Lấy danh sách bài viết thành công',
+
+
   // General
   SUCCESS = 'Thành công',
   FAILED = 'Thất bại',

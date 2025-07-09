@@ -3,6 +3,9 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { Newsfeed, NewsfeedDocument } from './schemas/newsfeed.schema';
 import { CreateNewsfeedDto } from './dto/requests/create-newsfeed.dto';
+import { NewsfeedResponseDto } from './dto/responses/newsfeed-response.dto';
+import { plainToInstance } from 'class-transformer';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Injectable()
 export class NewsfeedService {
@@ -21,6 +24,16 @@ export class NewsfeedService {
       favouriteCount: 0,
     });
 
-    return await newsfeed.save();
+    return plainToInstance(NewsfeedResponseDto, (await newsfeed.save()).toObject(), {
+      excludeExtraneousValues: true,
+    });
+
+  }
+
+  async findAll(): Promise<NewsfeedResponseDto[]> {
+    const result = await this.newsfeedModel.find().sort({ createdAt: -1 }).exec();
+    return plainToInstance(NewsfeedResponseDto, result, {
+      excludeExtraneousValues: true,
+    });
   }
 }

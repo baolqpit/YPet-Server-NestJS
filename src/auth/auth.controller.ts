@@ -15,24 +15,46 @@ export class AuthController {
   @Post('register')
   async register(@Body() dto: CreateUserDto) {
     const result = await this.authService.register(dto);
-    return new ApiResponse(true, ResponseMessage.REGISTER_SUCCESS, result, ResponseCode.SUCCESS);
+    return new ApiResponse(
+      true,
+      ResponseMessage.REGISTER_SUCCESS,
+      result,
+      ResponseCode.SUCCESS,
+    );
   }
 
   @Post('login')
   async login(@Body() dto: LoginDto) {
     const result = await this.authService.login(dto);
-    return new ApiResponse(true, ResponseMessage.LOGIN_SUCCESS, result, ResponseCode.SUCCESS);
+    return new ApiResponse(
+      true,
+      ResponseMessage.LOGIN_SUCCESS,
+      result,
+      ResponseCode.SUCCESS,
+    );
   }
 
   @Post('validate')
-  async validateToken(@Body() dto: ValidateDto ) {
+  async validateToken(@Body() dto: ValidateDto) {
     const payload = await this.authService.validateToken(dto.accessToken);
-    return new ApiResponse(true, ResponseMessage.TOKEN_VALID, payload, 200);
+    return new ApiResponse(
+      true,
+      ResponseMessage.TOKEN_VALID,
+      payload,
+      ResponseCode.SUCCESS,
+    );
   }
 
   @Post('refresh-token')
   async refreshToken(@Body() dto: RefreshDto) {
-    const accessToken = await this.authService.refreshAccessToken(dto.refreshToken);
-    return new ApiResponse(true, ResponseMessage.NEW_ACCESS_TOKEN, { accessToken }, 200);
+    const accessToken = await this.authService.refreshAccessToken(
+      dto.refreshToken,
+    );
+    return new ApiResponse(
+      true,
+      ResponseMessage.NEW_ACCESS_TOKEN,
+      { accessToken },
+      ResponseCode.SUCCESS,
+    );
   }
 }
