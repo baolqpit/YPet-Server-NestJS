@@ -20,6 +20,7 @@ export class NewsfeedService {
       authorAvatar: userPayload.avatar,
       authorName: userPayload.name,
       createdAt: new Date(),
+      publishedAt: new Date(),
       commentCount: 0,
       favouriteCount: 0,
     });

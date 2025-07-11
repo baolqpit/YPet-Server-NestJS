@@ -44,7 +44,7 @@ export class NewsfeedResponseDto {
 
   @ApiProperty()
   @Expose()
-  createdDate: Date;
+  createdAt: Date;
 
   @ApiProperty()
   @Expose()
