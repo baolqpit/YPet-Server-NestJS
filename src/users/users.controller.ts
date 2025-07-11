@@ -1,10 +1,24 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ResponseUserDto } from './dto/responses/response-user.dto';
-import { ApiCreatedResponse } from '@nestjs/swagger';
-import { CreateUserDto} from './dto/requests/create-user.dto';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiResponse } from '../common/helpers/api-response';
+import { ResponseMessage } from '../common/enums/response-message.enum';
+import { ResponseCode } from '../common/enums/response-code.enum';
 
-@Controller('users')
+@ApiTags('Users')
+@ApiBearerAuth('access-token')
+@Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get('/info')
+  @UseGuards(JwtAuthGuard)
+  async getUserInfo(@Request() req,) {
+    console.log('req.user:', req.user);
+
+    const response = await this.usersService.findByPayload(req.user);
+
+    return new ApiResponse(true, ResponseMessage.USER_FOUND, response, ResponseCode.SUCCESS);
+  }
 }
