@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Post } from '@nestjs/common';
+import { Types } from 'mongoose';
 
-export type PetDocument = Pet & Document;
+export type PetDocument = Document & {
+  _id: Types.ObjectId;
+} & Pet;
 
 /* MongoDB sẽ tự chuyển tên class thành pets khi schema được tạo.
 Nếu muốn thay đổi, chỉnh sửa lại @Schema({collection: 'table_name'}) */

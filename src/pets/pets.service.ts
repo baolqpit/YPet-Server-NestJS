@@ -10,10 +10,17 @@ import { PetResponseDto } from './dto/responses/pet-response.dto';
 export class PetsService {
   constructor(@InjectModel(Pet.name) private petModel: Model<PetDocument>) {}
 
-  async create(data: CreatePetDto) {
-    const pet = new this.petModel(data);
+  async create(dto: CreatePetDto) {
+    const petDoc = new this.petModel(dto);
 
-    return plainToInstance(PetResponseDto, (await pet.save()).toObject(), {
+    const savePetDoc = await petDoc.save();
+
+    const plainPet = {
+      ...petDoc.toObject(),
+      id: savePetDoc._id.toString(),
+    }
+
+    return plainToInstance(PetResponseDto, plainPet, {
       excludeExtraneousValues: true,
     });
   }
