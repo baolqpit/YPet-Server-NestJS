@@ -32,7 +32,7 @@ export class AuthService {
     const user = await this.userService.create(dto);
 
     const payload = {
-      sub: user._id,
+      sub: user.id,
       email: user.email,
       avatar: user.avatar,
       name: user.firstName + ' ' + user.lastName,
@@ -58,7 +58,6 @@ export class AuthService {
   async login(dto: LoginDto): Promise<AuthResponse> {
     const userDoc = await this.userService.findByEmail(dto.email);
 
-    ///Email user chưa tồn tại trong hệ thống
     if (!userDoc) {
       throw new UnauthorizedException(ResponseError.USER_NOT_FOUND);
     }
@@ -68,20 +67,25 @@ export class AuthService {
       userDoc.password,
     );
 
-    ///Thông tin đăng nhập sai
     if (!passwordMatched) {
       throw new UnauthorizedException(ResponseError.INVALID_CREDENTIALS);
     }
 
-    const user = plainToInstance(ResponseUserDto, userDoc, {
+    const plainUser = {
+      id: userDoc._id.toString(),
+      ...userDoc.toObject(),
+    };
+
+    const user = plainToInstance(ResponseUserDto, plainUser, {
       excludeExtraneousValues: true,
     });
 
+
     const payload = {
-      sub: user._id,
+      sub: user.id,
       email: user.email,
       avatar: user.avatar,
-      name: user.firstName + ' ' + user.lastName,
+      name: `${user.firstName} ${user.lastName}`,
     };
 
     const accessToken = this.jwtService.sign(payload, {
@@ -100,6 +104,7 @@ export class AuthService {
       refreshToken,
     });
   }
+
 
   async validateToken(token: string) {
     try {

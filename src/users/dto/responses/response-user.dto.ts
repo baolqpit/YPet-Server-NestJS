@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class ResponseUserDto {
   @ApiProperty()
   @Expose()
-  _id: string;
+  id: string;
 
   @ApiProperty()
   @Expose()

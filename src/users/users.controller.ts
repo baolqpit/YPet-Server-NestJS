@@ -15,8 +15,6 @@ export class UsersController {
   @Get('/info')
   @UseGuards(JwtAuthGuard)
   async getUserInfo(@Request() req,) {
-    console.log('req.user:', req.user);
-
     const response = await this.usersService.findByPayload(req.user);
 
     return new ApiResponse(true, ResponseMessage.USER_FOUND, response, ResponseCode.SUCCESS);

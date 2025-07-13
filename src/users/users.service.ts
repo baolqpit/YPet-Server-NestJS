@@ -21,26 +21,36 @@ export class UsersService {
     data.password = await bcrypt.hash(data.password, 10);
     const user = new this.userModel(data);
 
+    const savedUser = await user.save();
+
+    const plainUser = {
+      id: savedUser._id.toString(),
+      ...savedUser.toObject(),
+    };
+
     ///Chuyển đổi từ Document sang DTO tự động (các fields có @Expose)
-    return plainToInstance(ResponseUserDto, (await user.save()).toObject(), {
+    return plainToInstance(ResponseUserDto, plainUser, {
       ///Bỏ qua các fields không có @Expose
       excludeExtraneousValues: true,
     });
   }
 
   async findByPayload(payload: any): Promise<ResponseUserDto> {
-      const user = await this.findByEmail(payload.email);
+    console.log('Looking for user with id:', payload.sub);
 
-      if (!user) {
-        throw new UnauthorizedException(ResponseError.USER_NOT_FOUND);
-      }
+    const user = await this.userModel.findById(payload.sub);
 
-      return plainToInstance(ResponseUserDto, user, {
-        excludeExtraneousValues: true
-      });
+    if (!user) {
+      throw new UnauthorizedException(ResponseError.USER_NOT_FOUND);
+    }
+
+    return plainToInstance(ResponseUserDto, user.toObject(), {
+      excludeExtraneousValues: true,
+    });
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+
+  async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
 }
