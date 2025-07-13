@@ -11,6 +11,8 @@ export enum ResponseError {
 
   //Newsfeed
   NEWSFEED_NOT_FOUND = 'Không tìm thấy bài viết',
+  NEWSFEED_UPDATED_FAILED = 'Cập nhật bài viết thất bại',
+
   // General
   INTERNAL_SERVER_ERROR = 'Lỗi máy chủ nội bộ',
   BAD_REQUEST = 'Yêu cầu không hợp lệ',

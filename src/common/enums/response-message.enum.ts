@@ -13,6 +13,7 @@ export enum ResponseMessage {
   //Newsfeed
   NEWSFEED_CREATED = 'Tạo bài viết thành công',
   GET_NEWSFEED_SUCCESS = 'Lấy danh sách bài viết thành công',
+  UPDATED_NEWSFEED_SUCCESS = 'Cập nhật bài viết thành công',
 
   //Pet
   PET_CREATED = 'Tạo thú cưng thành công',

@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Get, Param,
-  Post,
+  Post, Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiResponse } from '../common/helpers/api-response';
 import { ResponseMessage } from '../common/enums/response-message.enum';
 import { ResponseCode } from '../common/enums/response-code.enum';
+import { UpdateNewsfeedDto } from './dto/requests/update-newsfeed.dto';
 
 @ApiTags('Newsfeed')
 @ApiBearerAuth('access-token')
@@ -59,6 +60,19 @@ export class NewsfeedsController {
     return new ApiResponse(
       true,
       ResponseMessage.GET_NEWSFEED_SUCCESS,
+      result,
+      ResponseCode.SUCCESS,
+    );
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  async update(@Body() dto: UpdateNewsfeedDto, @Request() req: any): Promise<ApiResponse> {
+    const result = await this.newsfeedService.update(req.user, dto);
+
+    return new ApiResponse(
+      true,
+      ResponseMessage.UPDATED_NEWSFEED_SUCCESS,
       result,
       ResponseCode.SUCCESS,
     );
