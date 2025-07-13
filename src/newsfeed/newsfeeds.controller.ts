@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, Param,
   Post,
   Request,
   UseGuards,
@@ -42,6 +42,19 @@ export class NewsfeedsController {
   @UseGuards(JwtAuthGuard)
   async findAll(): Promise<ApiResponse> {
     const result = await this.newsfeedService.findAll();
+
+    return new ApiResponse(
+      true,
+      ResponseMessage.GET_NEWSFEED_SUCCESS,
+      result,
+      ResponseCode.SUCCESS,
+    );
+  }
+
+  @Get('/:id')
+  @UseGuards(JwtAuthGuard)
+  async findOne(@Param('id') id: string): Promise<ApiResponse> {
+    const result = await this.newsfeedService.findOne(id);
 
     return new ApiResponse(
       true,

@@ -9,6 +9,8 @@ export enum ResponseError {
   EMAIL_ALREADY_EXISTS = 'Email đã tồn tại',
   USER_NOT_FOUND = 'Không tìm thấy người dùng',
 
+  //Newsfeed
+  NEWSFEED_NOT_FOUND = 'Không tìm thấy bài viết',
   // General
   INTERNAL_SERVER_ERROR = 'Lỗi máy chủ nội bộ',
   BAD_REQUEST = 'Yêu cầu không hợp lệ',

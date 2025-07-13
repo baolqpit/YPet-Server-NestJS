@@ -1,6 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
-export type NewsfeedDocument = Newsfeed & Document;
+export type NewsfeedDocument = Document & {
+  _id: Types.ObjectId;
+} & Newsfeed;
 
 @Schema()
 export class Newsfeed {
