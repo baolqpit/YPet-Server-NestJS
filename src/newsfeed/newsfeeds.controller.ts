@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get, Param,
   Post, Put,
   Request,
@@ -52,19 +52,6 @@ export class NewsfeedsController {
     );
   }
 
-  @Get('/:id')
-  @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id') id: string): Promise<ApiResponse> {
-    const result = await this.newsfeedService.findOne(id);
-
-    return new ApiResponse(
-      true,
-      ResponseMessage.GET_NEWSFEED_SUCCESS,
-      result,
-      ResponseCode.SUCCESS,
-    );
-  }
-
   @Put()
   @UseGuards(JwtAuthGuard)
   async update(@Body() dto: UpdateNewsfeedDto, @Request() req: any): Promise<ApiResponse> {
@@ -73,6 +60,32 @@ export class NewsfeedsController {
     return new ApiResponse(
       true,
       ResponseMessage.UPDATED_NEWSFEED_SUCCESS,
+      result,
+      ResponseCode.SUCCESS,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/like')
+  async like(@Param('id') id: string, @Request() req) {
+    const result = await this.newsfeedService.likeNewsfeed(id, req.user);
+
+    return new ApiResponse(
+      true,
+      ResponseMessage.LIKED,
+      result,
+      ResponseCode.SUCCESS,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/unlike')
+  async unlike(@Param('id') id: string, @Request() req) {
+    const result = await this.newsfeedService.unlikeNewsfeed(id, req.user);
+
+    return new ApiResponse(
+      true,
+      ResponseMessage.UNLIKED,
       result,
       ResponseCode.SUCCESS,
     );

@@ -1,5 +1,5 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { Newsfeed, NewsfeedDocument } from './schemas/newsfeed.schema';
 import { CreateNewsfeedDto } from './dto/requests/create-newsfeed.dto';
@@ -10,11 +10,18 @@ import { ResponseError } from '../common/enums/response-error.enum';
 import { ResponseCode } from '../common/enums/response-code.enum';
 import { UpdateNewsfeedResponseDto } from './dto/responses/update-newsfeed-response.dto';
 import { UpdateNewsfeedDto } from './dto/requests/update-newsfeed.dto';
+import {
+  NewsfeedLike,
+  NewsfeedLikeDocument,
+} from './schemas/newsfeed-like.schema';
+import { ResponseMessage } from '../common/enums/response-message.enum';
 
 @Injectable()
 export class NewsfeedService {
   constructor(
     @InjectModel(Newsfeed.name) private newsfeedModel: Model<NewsfeedDocument>,
+    @InjectModel(NewsfeedLike.name)
+    private newsfeedLikeModel: Model<NewsfeedLikeDocument>,
   ) {}
 
   async create(dto: CreateNewsfeedDto, userPayload: any) {
@@ -41,11 +48,13 @@ export class NewsfeedService {
     return plainToInstance(NewsfeedResponseDto, plainNewsfeed, {
       excludeExtraneousValues: true,
     });
-
   }
 
   async findAll(): Promise<NewsfeedResponseDto[]> {
-    const result = await this.newsfeedModel.find().sort({ createdDate: -1 }).exec();
+    const result = await this.newsfeedModel
+      .find()
+      .sort({ createdDate: -1 })
+      .exec();
 
     return plainToInstance(NewsfeedResponseDto, result, {
       excludeExtraneousValues: true,
@@ -59,20 +68,23 @@ export class NewsfeedService {
       throw new NotFoundException(ResponseError.NEWSFEED_NOT_FOUND);
     }
 
-    console.log("Find Newsfeed: ", result);
+    console.log('Find Newsfeed: ', result);
     return plainToInstance(NewsfeedResponseDto, result, {
       excludeExtraneousValues: true,
     });
   }
 
-  async update(userPayload: any, data: UpdateNewsfeedDto): Promise<UpdateNewsfeedResponseDto> {
+  async update(
+    userPayload: any,
+    data: UpdateNewsfeedDto,
+  ): Promise<UpdateNewsfeedResponseDto> {
     const post = await this.newsfeedModel.findById(data.id).exec();
 
     if (!post) {
       throw new NotFoundException(ResponseError.NEWSFEED_NOT_FOUND);
     }
 
-    console.log("Find Newsfeed: ", post);
+    console.log('Find Newsfeed: ', post);
 
     post.title = data.title;
     post.content = data.content;
@@ -84,7 +96,10 @@ export class NewsfeedService {
     const updated = await post.save();
 
     if (!updated) {
-      throw new HttpException(ResponseError.NEWSFEED_NOT_FOUND, ResponseCode.SERVER_ERROR);
+      throw new HttpException(
+        ResponseError.NEWSFEED_NOT_FOUND,
+        ResponseCode.SERVER_ERROR,
+      );
     }
 
     const plainResponse = {
@@ -92,7 +107,7 @@ export class NewsfeedService {
       id: updated._id.toString(),
       updatedById: userPayload.sub,
       updatedAt: Date.now(),
-    }
+    };
 
     console.log('Response: ', plainResponse);
 
@@ -101,4 +116,59 @@ export class NewsfeedService {
     });
   }
 
+  async likeNewsfeed(newsfeedId: string, userPayload: any) {
+    const exists = await this.newsfeedLikeModel.findOne({
+      newsfeedId: newsfeedId,
+      userId: userPayload.sub,
+    });
+
+    if (exists) {
+      return { success: true, message: ResponseMessage.ALREADY_LIKED };
+    }
+
+    const updatedPost = await this.newsfeedModel.findByIdAndUpdate(
+      newsfeedId,
+      {
+        $inc: { favouriteCount: 1 },
+      },
+      { new: true },
+    );
+
+    const plainResponse = {
+      ...updatedPost!.toObject(),
+      id: updatedPost!._id.toString(),
+    };
+
+    console.log('Like response: ', plainResponse);
+
+    return plainToInstance(NewsfeedResponseDto, plainResponse, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async unlikeNewsfeed(newsfeedId: string, userPayload: any) {
+    await this.newsfeedLikeModel.deleteOne({
+      newsFeedId: new Types.ObjectId(newsfeedId),
+      userId: new Types.ObjectId(userPayload.sub),
+    });
+
+    const updatedPost = await this.newsfeedModel.findByIdAndUpdate(
+      newsfeedId,
+      {
+        $inc: { favouriteCount: -1 },
+      },
+      { new: true },
+    );
+
+    const plainResponse = {
+      ...updatedPost!.toObject(),
+      id: updatedPost!._id.toString(),
+    };
+
+    console.log('Unlike response: ', plainResponse);
+
+    return plainToInstance(NewsfeedResponseDto, plainResponse, {
+      excludeExtraneousValues: true,
+    });
+  }
 }
