@@ -17,6 +17,7 @@ export enum ResponseMessage {
   ALREADY_LIKED = 'Đã thích bài viết',
   LIKED = 'Thích bài viết thành công',
   UNLIKED = 'Bỏ thích bài viết thành công',
+  POST_STATUS = 'Trạng thái bài viết',
 
   //Pet
   PET_CREATED = 'Tạo thú cưng thành công',

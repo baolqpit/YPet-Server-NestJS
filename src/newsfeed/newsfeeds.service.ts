@@ -171,4 +171,15 @@ export class NewsfeedService {
       excludeExtraneousValues: true,
     });
   }
+
+  async isLiked(newsfeedId: string, userPayload: any) {
+    const exists = await this.newsfeedLikeModel.exists(
+      {
+        newsfeedId: new Types.ObjectId(newsfeedId),
+        userId: new Types.ObjectId(userPayload.sub),
+      }
+    );
+
+    return {liked: !!exists};
+  }
 }

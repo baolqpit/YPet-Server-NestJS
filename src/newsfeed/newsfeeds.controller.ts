@@ -90,4 +90,17 @@ export class NewsfeedsController {
       ResponseCode.SUCCESS,
     );
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/isLiked')
+  async isLiked(@Param('id') id: string, @Request() req) {
+    const result = await this.newsfeedService.isLiked(id, req.user);
+
+    return new ApiResponse(
+      true,
+      ResponseMessage.POST_STATUS,
+      result,
+      ResponseCode.SUCCESS,
+    );
+  }
 }
